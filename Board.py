@@ -6,7 +6,8 @@ class Board:
     blocksize=1024
 
     def __init__(self,patches:List=[]):
-        self.patches=patches
+        self.patches=[]
+        for patch in patches: self.add_patch(patch)
 
     def play(self):
         for patch in self.patches:
