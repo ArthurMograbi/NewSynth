@@ -2,6 +2,8 @@ from Patch import Patch
 from typing import List
 
 class Board:
+    sample_rate=44100
+    blocksize=1024
 
     def __init__(self,patches:List=[]):
         self.patches=patches
@@ -16,3 +18,8 @@ class Board:
             if hasattr(patch,"stop") and callable(getattr(patch,"stop")):
                 patch.stop()
         
+        def handle_key(self, key: str):
+            if key == 's':
+                self.play()
+            elif key == 'e':
+                self.stop()
