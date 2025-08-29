@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    from Patch import Patch, SineGenerator, AudioOutput
+    from patches import Patch, SineGenerator, AudioOutput
     from Board import Board
     
     # Create patches

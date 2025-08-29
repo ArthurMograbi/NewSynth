@@ -1,4 +1,4 @@
-from Patch import Patch
+from patches import Patch
 from typing import List
 
 class Board:
