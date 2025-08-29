@@ -9,12 +9,15 @@ class Patch(ABC):
     def __init__(self,inputs:Dict[str,Patch]= {},outputs:Dict[Patch,str] = {}):
         self.inputs = inputs
         self.outputs = outputs
+        self.time = 0
 
     def getInputs(self):
         for k, v in self.inputs.items():
             setattr(self,k,v.getOutput(self))
     
     def getOutput(self,patch:Patch):
+        while self.time<patch.time:
+            self.step()
         return getattr(self,self.outputs[patch])
     
     def connect(self,patchIn:Patch,patchOut:Patch,propIn:str,propOut:str):
