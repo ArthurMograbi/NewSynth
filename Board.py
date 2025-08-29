@@ -17,9 +17,13 @@ class Board:
         for patch in self.patches:
             if hasattr(patch,"stop") and callable(getattr(patch,"stop")):
                 patch.stop()
+
+    def add_patch(self,patch:Patch):
+        self.patches.append(patch)
+        patch.board=self
         
-        def handle_key(self, key: str):
-            if key == 's':
-                self.play()
-            elif key == 'e':
-                self.stop()
+    def handle_key(self, key: str):
+        if key == 's':
+            self.play()
+        elif key == 'e':
+            self.stop()

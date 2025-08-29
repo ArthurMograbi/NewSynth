@@ -7,6 +7,7 @@ class Patch(ABC):
     _metadata = {}
 
     def __init__(self,inputs:Dict[str,Patch]= {},outputs:Dict[Patch,str] = {}):
+        self.board=None
         self.inputs = inputs
         self.outputs = outputs
         self.time = 0
