@@ -1,3 +1,4 @@
+#patches/SineGenerator.py
 import numpy as np
 from .Patch import Patch
 

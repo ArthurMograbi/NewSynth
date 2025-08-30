@@ -1,3 +1,4 @@
+#patches/AudioOutput
 import sounddevice as sd
 import numpy as np
 from .Patch import Patch

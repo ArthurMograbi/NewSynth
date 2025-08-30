@@ -1,3 +1,4 @@
+#patches/WavePlayer.py
 from .Patch import Patch
 from .waveforms import Waveform
 

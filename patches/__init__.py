@@ -1,3 +1,4 @@
+#patches/__init__.py
 from .Patch import Patch
 from .AudioOutput import AudioOutput
 from .SineGenerator import SineGenerator

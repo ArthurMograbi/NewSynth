@@ -1,10 +1,11 @@
+#test.py
 if __name__ == "__main__":
     from patches import Patch, SineGenerator, AudioOutput, MouseData, WavePlayer, Printer
     from patches.waveforms import FileWave, FunctionWave
     from Board import Board
     
     # Create patches
-    mouse = MouseData()
+    mouse = MouseData(scaleX=1/(2048))
     
     audio_out = AudioOutput(blocksize=512)
     form = FileWave("data/waves/record_out.wav")
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     board = Board(patches=[sine_gen,  audio_out, mouse,wav,prin])
     
     # Connect the sine generator to the audio output
-    
+    Patch.connect(sine_gen,mouse,"frequency","mouseX")
     Patch.connect(prin,sine_gen,"input","output")
     Patch.connect(wav,prin,"play_progress","output")
     Patch.connect(wav,mouse,"input","mouseX")
