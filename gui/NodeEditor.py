@@ -60,16 +60,6 @@ class NodeEditorView(QGraphicsView):
                     obj != patches_module.Patch):
                     patch_types[name] = obj
                     
-            # Also check for waveforms if they're patches
-            try:
-                waveforms_module = importlib.import_module('patches.waveforms')
-                for name, obj in inspect.getmembers(waveforms_module):
-                    if (inspect.isclass(obj) and 
-                        hasattr(obj, '_metadata') and 
-                        issubclass(obj, waveforms_module.Waveform)):
-                        patch_types[name] = obj
-            except ImportError:
-                pass
                 
         except ImportError as e:
             print(f"Error discovering patch types: {e}")
