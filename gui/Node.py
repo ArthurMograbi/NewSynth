@@ -13,8 +13,10 @@ class Node(QGraphicsItem):
         self.height = 100
         self.edge_radius = 5.0
         self.title_height = 24
+        self.port_spacing = 20
         self._inputs = []
         self._outputs = []
+        self._text_items = []
         self._init_ui()
         
     def _init_ui(self):
@@ -37,18 +39,35 @@ class Node(QGraphicsItem):
         # Input ports
         y_offset = self.title_height + 10
         for input_name in [k for k, v in io_data.items() if v == "in"]:
+            # Create port
             port = Port(self, input_name, is_output=False)
             port.setPos(5, y_offset)
             self._inputs.append(port)
-            y_offset += 20
+            
+            # Create text label for port
+            text_item = QGraphicsTextItem(input_name, self)
+            text_item.setDefaultTextColor(Qt.white)
+            text_item.setPos(20, y_offset - 5)
+            self._text_items.append(text_item)
+            
+            y_offset += self.port_spacing
         
         # Output ports
         y_offset = self.title_height + 10
         for output_name in [k for k, v in io_data.items() if v == "out"]:
+            # Create port
             port = Port(self, output_name, is_output=True)
             port.setPos(self.width - 15, y_offset)
             self._outputs.append(port)
-            y_offset += 20
+            
+            # Create text label for port
+            text_item = QGraphicsTextItem(output_name, self)
+            text_item.setDefaultTextColor(Qt.white)
+            text_rect = text_item.boundingRect()
+            text_item.setPos(self.width - 20 - text_rect.width(), y_offset - 5)
+            self._text_items.append(text_item)
+            
+            y_offset += self.port_spacing
             
         # Set minimum height based on ports
         self.height = max(self.height, y_offset + 10)

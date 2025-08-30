@@ -2,6 +2,8 @@
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QMenu, QAction
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QKeyEvent
+import importlib
+import inspect
 from .Node import Node
 from .Connection import Connection
 from .Port import Port
@@ -43,14 +45,40 @@ class NodeEditorView(QGraphicsView):
         context_menu.exec_(event.globalPos())
         
     def _discover_patch_types(self):
-        # This would import and discover all available patch classes
-        # For simplicity, we'll return a hardcoded list
-        from patches import SineGenerator, AudioOutput, MouseData, WavePlayer
-        return {
-            "Sine Generator": SineGenerator,
-            "Audio Output": AudioOutput,
-            "Mouse Data": MouseData,
-            "Wave Player": WavePlayer
+        # Discover all available patch classes by inspecting the patches module
+        patch_types = {}
+        
+        try:
+            # Import the patches module
+            patches_module = importlib.import_module('patches')
+            
+            # Iterate through all members of the module
+            for name, obj in inspect.getmembers(patches_module):
+                if (inspect.isclass(obj) and 
+                    hasattr(obj, '_metadata') and 
+                    issubclass(obj, patches_module.Patch) and 
+                    obj != patches_module.Patch):
+                    patch_types[name] = obj
+                    
+            # Also check for waveforms if they're patches
+            try:
+                waveforms_module = importlib.import_module('patches.waveforms')
+                for name, obj in inspect.getmembers(waveforms_module):
+                    if (inspect.isclass(obj) and 
+                        hasattr(obj, '_metadata') and 
+                        issubclass(obj, waveforms_module.Waveform)):
+                        patch_types[name] = obj
+            except ImportError:
+                pass
+                
+        except ImportError as e:
+            print(f"Error discovering patch types: {e}")
+            
+        return patch_types or {
+            "SineGenerator": getattr(__import__('patches'), 'SineGenerator', None),
+            "AudioOutput": getattr(__import__('patches'), 'AudioOutput', None),
+            "MouseData": getattr(__import__('patches'), 'MouseData', None),
+            "WavePlayer": getattr(__import__('patches'), 'WavePlayer', None)
         }
         
     def add_patch(self, patch_class):
