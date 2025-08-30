@@ -15,6 +15,7 @@ class WavePlayer(Patch):
         super().__init__()
         self.wave = wave
         self.play_progress = 0
+        self.input =0.0
         self.output = 0.0
         self.playing = False
 
@@ -24,7 +25,7 @@ class WavePlayer(Patch):
         if self.input > 0.0:
             self.playing=True
         if self.playing:
-            self.output = self.wave[self.play_progress]
+            self.output = self.wave[abs(self.play_progress)]
             #print(self.play_progress,self.output,len(self.wave))
             self.play_progress+=1
             if self.play_progress > len(self.wave):

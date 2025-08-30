@@ -1,4 +1,5 @@
 from .Waveform import Waveform
 from .FunctionWave import FunctionWave
+from .FileWave import FileWave
 
-__all__ = ["Waveform","FunctionWave"]
+__all__ = ["Waveform","FunctionWave","FileWave"]

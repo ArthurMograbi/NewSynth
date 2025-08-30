@@ -1,33 +1,27 @@
 if __name__ == "__main__":
-    from patches import Patch, SineGenerator, AudioOutput, MouseData, ChromaticFrequencyStepper, VCA, Printer
+    from patches import Patch, SineGenerator, AudioOutput, MouseData, WavePlayer, Printer
+    from patches.waveforms import FileWave, FunctionWave
     from Board import Board
     
     # Create patches
     mouse = MouseData()
-    chrom = ChromaticFrequencyStepper()
-    sine_gen = SineGenerator(frequency=440, amplitude=0.3)
-    sine_gen2 = SineGenerator(frequency=110/16, amplitude=0.3)
+    
     audio_out = AudioOutput(blocksize=512)
-    vca = VCA(amplification=2)
-    vca2 = VCA(amplification=2)
-     
+    form = FileWave("data/waves/record_out.wav")
+    wav = WavePlayer(form)
+    sine_gen = SineGenerator(frequency=1/18, amplitude=len(form))
+    prin = Printer(interval=10000)
     # Create board and add patches
-    board = Board(patches=[sine_gen, sine_gen2, audio_out,chrom,mouse,vca])
-    print(sine_gen.inputs,sine_gen.outputs)
-    print(audio_out.inputs,audio_out.outputs)
+    board = Board(patches=[sine_gen,  audio_out, mouse,wav,prin])
+    
     # Connect the sine generator to the audio output
     
-    Patch.connect(sine_gen,mouse,"amplitude","mouseScroll")
-    Patch.connect(vca2,mouse,"input","mouseScroll")
-    Patch.connect(sine_gen2,vca2,"frequency","output")
-    Patch.connect(chrom,mouse,"input","mouseX")
-    Patch.connect(sine_gen,chrom,"frequency","output")
-    Patch.connect(vca,sine_gen,"input","output")
-    Patch.connect(vca,sine_gen2,"amplification","output")
-    Patch.connect(audio_out, vca, "input", "output")
+    Patch.connect(prin,sine_gen,"input","output")
+    Patch.connect(wav,prin,"play_progress","output")
+    Patch.connect(wav,mouse,"input","mouseX")
+    Patch.connect(audio_out, wav, "input", "output")
     
-    print(sine_gen.inputs,sine_gen.outputs)
-    print(audio_out.inputs,audio_out.outputs)
+
 
     try:
         # Start the audio stream
