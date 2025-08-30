@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPen, QBrush, QColor, QPainterPath
 from .Port import Port
 
 class Node(QGraphicsItem):
-    def __init__(self, patch, title="Node"):
+    def __init__(self, patch, title=None):
         super().__init__()
         self.patch = patch
         self.title = title or patch.__class__.__name__
