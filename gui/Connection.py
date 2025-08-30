@@ -4,12 +4,16 @@ from PyQt5.QtCore import QPointF
 from PyQt5.QtGui import QPainterPath, QPen, QColor
 
 class Connection(QGraphicsPathItem):
-    def __init__(self, start_port, end_port):
+    def __init__(self, start_port, end_port=None):
         super().__init__()
         self.start_port = start_port
         self.end_port = end_port
         self.start_port._connections.append(self)
-        self.end_port._connections.append(self)
+        
+        # Only add to end_port if it exists
+        if self.end_port is not None:
+            self.end_port._connections.append(self)
+            
         self.setZValue(-1)
         self._update_path()
         
@@ -17,7 +21,12 @@ class Connection(QGraphicsPathItem):
         # Create a curved path between ports
         path = QPainterPath()
         start_pos = self.start_port.get_socket_position()
-        end_pos = self.end_port.get_socket_position()
+        
+        # If we don't have an end port, use the start position
+        if self.end_port is None:
+            end_pos = start_pos
+        else:
+            end_pos = self.end_port.get_socket_position()
         
         path.moveTo(start_pos)
         
@@ -36,10 +45,25 @@ class Connection(QGraphicsPathItem):
     def update_path_from_ports(self):
         self._update_path()
         
+    def set_end_port(self, end_port):
+        """Update the end port of this connection"""
+        if self.end_port is not None and self.end_port != end_port:
+            # Remove from old end port's connections
+            if self in self.end_port._connections:
+                self.end_port._connections.remove(self)
+                
+        self.end_port = end_port
+        
+        # Add to new end port's connections
+        if self.end_port is not None:
+            self.end_port._connections.append(self)
+            
+        self._update_path()
+        
     def disconnect(self):
-        if self in self.start_port._connections:
+        if self.start_port and self in self.start_port._connections:
             self.start_port._connections.remove(self)
-        if self in self.end_port._connections:
+        if self.end_port and self in self.end_port._connections:
             self.end_port._connections.remove(self)
         if self.scene():
             self.scene().removeItem(self)

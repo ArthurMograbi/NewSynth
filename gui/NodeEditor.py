@@ -17,7 +17,7 @@ class NodeEditorView(QGraphicsView):
         self.setRenderHints(self.renderHints())
         
         self._drag_start = None
-        self._connection_in_progress = None
+        self._temp_connection = None
         
         # Map of patch instances to node objects
         self.node_map = {}
@@ -97,23 +97,36 @@ class NodeEditorView(QGraphicsView):
             item = self.itemAt(event.pos())
             if isinstance(item, Port):
                 self._drag_start = item
-                self._connection_in_progress = Connection(item, None)
-                self.scene.addItem(self._connection_in_progress)
+                # Create a temporary connection with no end port
+                self._temp_connection = Connection(item, None)
+                self.scene.addItem(self._temp_connection)
                 return
                 
         super().mousePressEvent(event)
         
     def mouseMoveEvent(self, event):
-        if self._connection_in_progress:
-            # Update the end position of the connection
+        if self._temp_connection:
+            # Update the end position of the temporary connection
             mouse_pos = self.mapToScene(event.pos())
-            self._connection_in_progress.end_port_pos = mouse_pos
-            self._connection_in_progress._update_path()
+            
+            # Check if we're over a port
+            item = self.itemAt(event.pos())
+            if isinstance(item, Port):
+                # Update the temporary connection to use this port
+                self._temp_connection.set_end_port(item)
+            else:
+                # Create a temporary position for the connection
+                temp_port = type('TempPort', (), {
+                    'get_socket_position': lambda x: mouse_pos,
+                    '_connections':[]
+                })()
+                self._temp_connection.set_end_port(temp_port)
+                
         else:
             super().mouseMoveEvent(event)
             
     def mouseReleaseEvent(self, event):
-        if self._connection_in_progress and event.button() == Qt.LeftButton:
+        if self._temp_connection and event.button() == Qt.LeftButton:
             # Check if we're releasing over a port
             item = self.itemAt(event.pos())
             if isinstance(item, Port) and item != self._drag_start:
@@ -138,11 +151,16 @@ class NodeEditorView(QGraphicsView):
                         input_prop = self._drag_start.name
                         
                     from patches.Patch import Patch
-                    Patch.connect(input_patch, output_patch, input_prop, output_prop)
+                    try:
+                        Patch.connect(input_patch, output_patch, input_prop, output_prop)
+                    except Exception as e:
+                        print(f"Error connecting patches: {e}")
+                        # Remove the visual connection if the patch connection failed
+                        final_connection.disconnect()
             
             # Clean up temporary connection
-            self.scene.removeItem(self._connection_in_progress)
-            self._connection_in_progress = None
+            self.scene.removeItem(self._temp_connection)
+            self._temp_connection = None
             self._drag_start = None
             
         super().mouseReleaseEvent(event)
