@@ -164,3 +164,23 @@ class NodeEditorView(QGraphicsView):
             self._drag_start = None
             
         super().mouseReleaseEvent(event)
+    
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key_Delete:
+            self.delete_selected()
+        else:
+            super().keyPressEvent(event)
+            
+    def delete_selected(self):
+        selected_items = self.scene.selectedItems()
+        for item in selected_items:
+            if isinstance(item, Node):
+                # Remove all connections first
+                for port in item._inputs + item._outputs:
+                    for connection in port._connections[:]:  # Use slice copy to avoid modification during iteration
+                        connection.disconnect()
+                
+                # Remove from board and scene
+                self.board.remove_patch(item.patch)
+                self.scene.removeItem(item)
+                del self.node_map[item.patch]

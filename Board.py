@@ -23,6 +23,9 @@ class Board:
     def add_patch(self,patch:Patch):
         self.patches.append(patch)
         patch.board=self
+
+    def remove_patch(self,patch:Patch):
+        self.patches.remove(patch)
         
     def handle_key(self, key: str):
         if key == 's':

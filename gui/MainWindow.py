@@ -41,6 +41,10 @@ class MainWindow(QMainWindow):
         stop_action = QAction("Stop", self)
         stop_action.triggered.connect(self.board.stop)
         toolbar.addAction(stop_action)
+
+        delete_action = QAction("Delete", self)
+        delete_action.triggered.connect(self.editor.delete_selected)
+        toolbar.addAction(delete_action)
         
         # Set central widget
         self.setCentralWidget(self.editor)
