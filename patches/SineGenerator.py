@@ -12,25 +12,19 @@ class SineGenerator(Patch):
         }
     }
     
-    def __init__(self, frequency=440, amplitude=0.5, sample_rate=44100):
+    def __init__(self, frequency=440, amplitude=0.5):
         super().__init__()
         self.frequency = frequency
         self.amplitude = amplitude
-        self.sample_rate = sample_rate
         self.phase = 0.0
         self.output = 0.0
-        self.step_size = 2 * np.pi * frequency / sample_rate
         
     
     def step(self):
         # Update parameters if connected to other patches
         self.getInputs()
-        #print(self.frequency, self.amplitude)
-        # Update step size if frequency has changed
-        if hasattr(self, 'frequency_input') and self.frequency_input is not None:
-            self.step_size = 2 * np.pi * self.frequency_input / self.sample_rate
-        else:
-            self.step_size = 2 * np.pi * self.frequency / self.sample_rate
+        
+        self.step_size = 2 * np.pi * self.frequency / self.board.sample_rate
         
         # Generate the next sample
         self.output = self.amplitude * np.sin(self.phase)

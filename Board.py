@@ -2,7 +2,7 @@ from patches import Patch
 from typing import List
 
 class Board:
-    sample_rate=44100
+    sample_rate=22050
     blocksize=1024
 
     def __init__(self,patches:List=[]):
