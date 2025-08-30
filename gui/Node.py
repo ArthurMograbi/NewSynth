@@ -35,12 +35,28 @@ class Node(QGraphicsItem):
         # Create ports based on metadata
         metadata = getattr(self.patch, '_metadata', {})
         io_data = metadata.get('io', {})
+        waveio_data = metadata.get('waveio', {})
         
         # Input ports
         y_offset = self.title_height + 10
         for input_name in [k for k, v in io_data.items() if v == "in"]:
             # Create port
             port = Port(self, input_name, is_output=False)
+            port.setPos(5, y_offset)
+            self._inputs.append(port)
+            
+            # Create text label for port
+            text_item = QGraphicsTextItem(input_name, self)
+            text_item.setDefaultTextColor(Qt.white)
+            text_item.setPos(20, y_offset - 5)
+            self._text_items.append(text_item)
+            
+            y_offset += self.port_spacing
+            
+        # Waveform input ports
+        for input_name in [k for k, v in waveio_data.items() if v == "in"]:
+            # Create waveform port with yellow border
+            port = Port(self, input_name, is_output=False, is_waveform=True)
             port.setPos(5, y_offset)
             self._inputs.append(port)
             
@@ -94,3 +110,41 @@ class Node(QGraphicsItem):
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(QColor(30, 30, 30)))
         painter.drawPath(title_path)
+
+# Add a new class for Waveform nodes
+class WaveformNode(Node):
+    def __init__(self, waveform, title=None):
+        super().__init__(waveform, title or waveform.__class__.__name__)
+        self.waveform = waveform
+        
+    def _init_ui(self):
+        # Create title
+        self.title_item = QGraphicsTextItem(self)
+        self.title_item.setPlainText(self.title)
+        self.title_item.setDefaultTextColor(Qt.white)
+        
+        # Position title
+        title_rect = self.title_item.boundingRect()
+        self.title_item.setPos(
+            (self.width - title_rect.width()) / 2,
+            5
+        )
+        
+        # Create output port for waveform
+        y_offset = self.title_height + 10
+        port = Port(self, "wave", is_output=True, is_waveform=True)
+        port.setPos(self.width - 15, y_offset)
+        self._outputs.append(port)
+        
+        # Create text label for port
+        text_item = QGraphicsTextItem("wave", self)
+        text_item.setDefaultTextColor(Qt.white)
+        text_rect = text_item.boundingRect()
+        text_item.setPos(self.width - 20 - text_rect.width(), y_offset - 5)
+        self._text_items.append(text_item)
+        
+        # Set minimum height based on ports
+        self.height = max(self.height, y_offset + 20)
+        
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setFlag(QGraphicsItem.ItemIsSelectable)

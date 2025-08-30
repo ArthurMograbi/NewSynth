@@ -9,10 +9,13 @@ class WavePlayer(Patch):
             "input":"in",
             "play_progress":"in",
             "output":"out"
+        },
+        "waveio":{
+            "wave":"in"
         }
     }
 
-    def __init__(self,wave:Waveform):
+    def __init__(self,wave:Waveform|None=None):
         super().__init__()
         self.wave = wave
         self.play_progress = 0

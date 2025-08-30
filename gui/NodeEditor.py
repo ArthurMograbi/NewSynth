@@ -1,12 +1,14 @@
 # gui/NodeEditor.py
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QMenu, QAction
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QMenu, QAction, QFileDialog
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QKeyEvent
 import importlib
 import inspect
-from .Node import Node
+from .Node import Node, WaveformNode
 from .Connection import Connection
 from .Port import Port
+from patches.waveforms import FileWave, FunctionWave
+import math
 
 class NodeEditorView(QGraphicsView):
     def __init__(self, board):
@@ -21,6 +23,8 @@ class NodeEditorView(QGraphicsView):
         
         # Map of patch instances to node objects
         self.node_map = {}
+        # Map of waveform instances to node objects
+        self.waveform_map = {}
         
         # Add existing patches to the scene
         for patch in board.patches:
@@ -32,6 +36,13 @@ class NodeEditorView(QGraphicsView):
         self.node_map[patch] = node
         return node
         
+    def add_waveform_node(self, waveform):
+        """Add a waveform node to the scene"""
+        node = WaveformNode(waveform)
+        self.scene.addItem(node)
+        self.waveform_map[waveform] = node
+        return node
+        
     def contextMenuEvent(self, event):
         context_menu = QMenu()
         
@@ -41,6 +52,19 @@ class NodeEditorView(QGraphicsView):
             action = QAction(f"Add {patch_name}", self)
             action.triggered.connect(lambda checked, cls=patch_class: self.add_patch(cls))
             context_menu.addAction(action)
+            
+        # Add waveform submenu
+        waveform_menu = context_menu.addMenu("Add Waveform")
+        
+        # Add FileWave action
+        file_wave_action = QAction("FileWave", self)
+        file_wave_action.triggered.connect(self.add_file_wave)
+        waveform_menu.addAction(file_wave_action)
+        
+        # Add FunctionWave action
+        func_wave_action = QAction("FunctionWave", self)
+        func_wave_action.triggered.connect(self.add_function_wave)
+        waveform_menu.addAction(func_wave_action)
             
         context_menu.exec_(event.globalPos())
         
@@ -68,7 +92,8 @@ class NodeEditorView(QGraphicsView):
             "SineGenerator": getattr(__import__('patches'), 'SineGenerator', None),
             "AudioOutput": getattr(__import__('patches'), 'AudioOutput', None),
             "MouseData": getattr(__import__('patches'), 'MouseData', None),
-            "WavePlayer": getattr(__import__('patches'), 'WavePlayer', None)
+            "WavePlayer": getattr(__import__('patches'), 'WavePlayer', None),
+            "VCA": getattr(__import__('patches'), 'VCA', None)
         }
         
     def add_patch(self, patch_class):
@@ -80,6 +105,32 @@ class NodeEditorView(QGraphicsView):
         
         # Create and add node to scene
         node = self.add_node_for_patch(patch)
+        node.setPos(self.mapToScene(QPoint(100, 100)))
+        
+    def add_file_wave(self):
+        # Open file dialog to select audio file
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Open Audio File", "", "Audio Files (*.wav *.mp3 *.ogg *.flac)"
+        )
+        
+        if filename:
+            try:
+                # Create a FileWave with the selected file
+                file_wave = FileWave(filename)
+                
+                # Create and add node to scene
+                node = self.add_waveform_node(file_wave)
+                node.setPos(self.mapToScene(QPoint(100, 100)))
+            except Exception as e:
+                print(f"Error loading audio file: {e}")
+        
+    def add_function_wave(self):
+        # Create a FunctionWave with a simple sine function
+        func = lambda x: math.sin(x * 2 * math.pi)
+        func_wave = FunctionWave(func)
+        
+        # Create and add node to scene
+        node = self.add_waveform_node(func_wave)
         node.setPos(self.mapToScene(QPoint(100, 100)))
         
     def mousePressEvent(self, event):
@@ -124,29 +175,44 @@ class NodeEditorView(QGraphicsView):
                 if (self._drag_start.is_output != item.is_output and
                     self._drag_start.node != item.node):
                     
-                    # Create the actual connection
-                    final_connection = Connection(self._drag_start, item)
-                    self.scene.addItem(final_connection)
-                    
-                    # Make the patch connection
-                    if self._drag_start.is_output:
-                        output_patch = self._drag_start.node.patch
-                        output_prop = self._drag_start.name
-                        input_patch = item.node.patch
-                        input_prop = item.name
+                    # Handle waveform connections specially
+                    if self._drag_start.is_waveform and item.is_waveform:
+                        # This is a waveform connection
+                        if self._drag_start.is_output:
+                            # Connect waveform from output to input
+                            waveform = self._drag_start.node.waveform
+                            setattr(item.node.patch, item.name, waveform)
+                            
+                            # Create a visual connection for waveform
+                            final_connection = Connection(self._drag_start, item)
+                            self.scene.addItem(final_connection)
+                        else:
+                            # This shouldn't happen as waveform inputs shouldn't be outputs
+                            pass
                     else:
-                        output_patch = item.node.patch
-                        output_prop = item.name
-                        input_patch = self._drag_start.node.patch
-                        input_prop = self._drag_start.name
+                        # Create the actual connection for regular audio
+                        final_connection = Connection(self._drag_start, item)
+                        self.scene.addItem(final_connection)
                         
-                    from patches.Patch import Patch
-                    try:
-                        Patch.connect(input_patch, output_patch, input_prop, output_prop)
-                    except Exception as e:
-                        print(f"Error connecting patches: {e}")
-                        # Remove the visual connection if the patch connection failed
-                        final_connection.disconnect()
+                        # Make the patch connection
+                        if self._drag_start.is_output:
+                            output_patch = self._drag_start.node.patch
+                            output_prop = self._drag_start.name
+                            input_patch = item.node.patch
+                            input_prop = item.name
+                        else:
+                            output_patch = item.node.patch
+                            output_prop = item.name
+                            input_patch = self._drag_start.node.patch
+                            input_prop = self._drag_start.name
+                            
+                        from patches.Patch import Patch
+                        try:
+                            Patch.connect(input_patch, output_patch, input_prop, output_prop)
+                        except Exception as e:
+                            print(f"Error connecting patches: {e}")
+                            # Remove the visual connection if the patch connection failed
+                            final_connection.disconnect()
             
             # Clean up temporary connection
             self.scene.removeItem(self._temp_connection)
@@ -170,7 +236,13 @@ class NodeEditorView(QGraphicsView):
                     for connection in port._connections[:]:  # Use slice copy to avoid modification during iteration
                         connection.disconnect()
                 
-                # Remove from board and scene
-                self.board.remove_patch(item.patch)
+                # Remove from board and scene if it's a patch
+                if hasattr(item, 'patch'):
+                    self.board.remove_patch(item.patch)
+                    if item.patch in self.node_map:
+                        del self.node_map[item.patch]
+                # Remove from waveform map if it's a waveform
+                elif hasattr(item, 'waveform') and item.waveform in self.waveform_map:
+                    del self.waveform_map[item.waveform]
+                
                 self.scene.removeItem(item)
-                del self.node_map[item.patch]

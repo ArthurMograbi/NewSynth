@@ -39,8 +39,16 @@ class Connection(QGraphicsPathItem):
         
         path.cubicTo(ctrl1, ctrl2, end_pos)
         
+        # Use different colors for waveform connections
+        if (hasattr(self.start_port, 'is_waveform') and 
+            hasattr(self.end_port, 'is_waveform') and
+            self.start_port.is_waveform and self.end_port.is_waveform):
+            pen = QPen(QColor(255, 255, 0, 200), 3)  # Yellow for waveform connections
+        else:
+            pen = QPen(QColor(200, 200, 200, 200), 2)  # Regular connections
+            
+        self.setPen(pen)
         self.setPath(path)
-        self.setPen(QPen(QColor(200, 200, 200, 200), 2))
         
     def update_path_from_ports(self):
         self._update_path()
