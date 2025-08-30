@@ -14,7 +14,7 @@ if __name__ == "__main__":
     print(audio_out.inputs,audio_out.outputs)
     # Connect the sine generator to the audio output
     Patch.connect(audio_out, sine_gen, "input", "output")
-    Patch.connect(sine_gen,mouse,"amplitude","mouseY")
+    Patch.connect(sine_gen,mouse,"amplitude","mouseScroll")
     Patch.connect(chrom,mouse,"input","mouseX")
     Patch.connect(sine_gen,chrom,"frequency","output")
     
