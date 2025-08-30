@@ -25,7 +25,7 @@ class SineGenerator(Patch):
     def step(self):
         # Update parameters if connected to other patches
         self.getInputs()
-        
+        #print(self.frequency, self.amplitude)
         # Update step size if frequency has changed
         if hasattr(self, 'frequency_input') and self.frequency_input is not None:
             self.step_size = 2 * np.pi * self.frequency_input / self.sample_rate

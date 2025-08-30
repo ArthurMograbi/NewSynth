@@ -1,8 +1,9 @@
 if __name__ == "__main__":
-    from patches import Patch, SineGenerator, AudioOutput
+    from patches import Patch, SineGenerator, AudioOutput,MouseData
     from Board import Board
     
     # Create patches
+    mouse = MouseData()
     sine_gen = SineGenerator(frequency=440, amplitude=0.3)
     audio_out = AudioOutput(blocksize=512)
     
@@ -12,6 +13,8 @@ if __name__ == "__main__":
     print(audio_out.inputs,audio_out.outputs)
     # Connect the sine generator to the audio output
     Patch.connect(audio_out, sine_gen, "input", "output")
+    Patch.connect(sine_gen,mouse,"amplitude","mouseY")
+    Patch.connect(sine_gen,mouse,"frequency","mouseX")
     
     print(sine_gen.inputs,sine_gen.outputs)
     print(audio_out.inputs,audio_out.outputs)
