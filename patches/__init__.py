@@ -5,5 +5,6 @@ from .MouseData import MouseData
 from .ChromaticFrequencyStepper import ChromaticFrequencyStepper
 from .VCA import VCA
 from .Printer import Printer
+from .AccAndDec import AccAndDec
 
-__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA"]
+__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA","Printer","AccAndDec"]

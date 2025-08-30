@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    from patches import Patch, SineGenerator, AudioOutput, MouseData, ChromaticFrequencyStepper, VCA
+    from patches import Patch, SineGenerator, AudioOutput, MouseData, ChromaticFrequencyStepper, VCA,AccAndDec
     from Board import Board
     
     # Create patches
@@ -9,6 +9,7 @@ if __name__ == "__main__":
     sine_gen2 = SineGenerator(frequency=110/16, amplitude=0.3)
     audio_out = AudioOutput(blocksize=512)
     vca = VCA(amplification=2)
+    acc = AccAndDec()
     
     # Create board and add patches
     board = Board(patches=[sine_gen, sine_gen2, audio_out,chrom,mouse,vca])
@@ -16,7 +17,8 @@ if __name__ == "__main__":
     print(audio_out.inputs,audio_out.outputs)
     # Connect the sine generator to the audio output
     
-    Patch.connect(sine_gen,mouse,"amplitude","mouseScroll")
+    Patch.connect(acc,mouse,"input","mouseScroll")
+    Patch.connect(sine_gen,acc,"amplitude","output")
     Patch.connect(chrom,mouse,"input","mouseX")
     Patch.connect(sine_gen,chrom,"frequency","output")
     Patch.connect(vca,sine_gen,"input","output")
