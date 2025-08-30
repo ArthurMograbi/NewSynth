@@ -9,5 +9,6 @@ from .Printer import Printer
 from .AccAndDec import AccAndDec
 from .WavePlayer import WavePlayer
 from .CountTo import CountTo
+from .AddConst import AddConst
 
-__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA","Printer","AccAndDec","WavePlayer","CountTo"]
+__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA","Printer","AccAndDec","WavePlayer","CountTo","AddConst"]
