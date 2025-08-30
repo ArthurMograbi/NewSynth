@@ -13,7 +13,7 @@ class SineGenerator(Patch):
         }
     }
     
-    def __init__(self, frequency=440, amplitude=0.5):
+    def __init__(self, frequency:float=440, amplitude:float=0.5):
         super().__init__()
         self.frequency = frequency
         self.amplitude = amplitude

@@ -114,7 +114,7 @@ class MainWindow(QMainWindow):
                         if isinstance(current_value, (int, float)):
                             # Use a spin box for numeric values
                             spin_box = QDoubleSpinBox()
-                            spin_box.setRange(-1000, 1000)
+                            spin_box.setRange(-100000, 500000)
                             spin_box.setDecimals(4)
                             spin_box.setSingleStep(0.1)
                             spin_box.setValue(float(current_value))

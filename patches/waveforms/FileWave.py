@@ -16,6 +16,8 @@ class FileWave(Waveform):
         
         # Store the normalized audio data
         self.audio_data = y.astype(np.float32)
+
+        print(len(self))
         
     def getSample(self, normTime: float):
         # Clamp normalized time between 0 and 1
