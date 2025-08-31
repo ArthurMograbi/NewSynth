@@ -46,26 +46,24 @@ class NodeEditorView(QGraphicsView):
     def contextMenuEvent(self, event):
         context_menu = QMenu()
         
-        # Add actions for each patch type
+        # Create "Add Patch" submenu
+        patch_menu = context_menu.addMenu("Add Patch")
         patch_types = self._discover_patch_types()
         for patch_name, patch_class in patch_types.items():
-            action = QAction(f"Add {patch_name}", self)
+            action = QAction(f"{patch_name}", self)
             action.triggered.connect(lambda checked, cls=patch_class: self.add_patch(cls))
-            context_menu.addAction(action)
-            
-        # Add waveform submenu
-        waveform_menu = context_menu.addMenu("Add Waveform")
+            patch_menu.addAction(action)
         
-        # Add FileWave action
+        # Create "Add Waveform" submenu
+        waveform_menu = context_menu.addMenu("Add Waveform")
         file_wave_action = QAction("FileWave", self)
         file_wave_action.triggered.connect(self.add_file_wave)
         waveform_menu.addAction(file_wave_action)
         
-        # Add FunctionWave action
         func_wave_action = QAction("FunctionWave", self)
         func_wave_action.triggered.connect(self.add_function_wave)
         waveform_menu.addAction(func_wave_action)
-            
+        
         context_menu.exec_(event.globalPos())
         
     def _discover_patch_types(self):
