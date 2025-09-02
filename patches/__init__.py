@@ -11,5 +11,6 @@ from .WavePlayer import WavePlayer
 from .CountTo import CountTo
 from .AddConst import AddConst
 from .Abs import Abs
+from .Filter import Filter
 
-__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA","Printer","AccAndDec","WavePlayer","CountTo","AddConst","Abs"]
+__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA","Printer","AccAndDec","WavePlayer","CountTo","AddConst","Abs","Filter"]
