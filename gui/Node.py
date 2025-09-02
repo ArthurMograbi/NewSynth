@@ -17,7 +17,16 @@ class Node(QGraphicsItem):
         self._inputs = []
         self._outputs = []
         self._text_items = []
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)  # Flag for item moved event
         self._init_ui()
+        
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemPositionHasChanged:
+            # Update all connections when node moves
+            for port in self._inputs + self._outputs:
+                for connection in port._connections:
+                    connection.update_path_from_ports()
+        return super().itemChange(change, value)
         
     def _init_ui(self):
         # Create title
@@ -118,7 +127,10 @@ class WaveformNode(Node):
         self.waveform = waveform
         
     def _init_ui(self):
-        # Create title
+        # Initialize port lists
+        self._inputs = []
+        self._outputs = []
+        
         self.title_item = QGraphicsTextItem(self)
         self.title_item.setPlainText(self.title)
         self.title_item.setDefaultTextColor(Qt.white)
