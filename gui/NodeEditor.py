@@ -10,6 +10,17 @@ from .Port import Port
 from patches.waveforms import FileWave, FunctionWave
 import math
 
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QMenu, QAction, QFileDialog
+from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtGui import QKeyEvent, QWheelEvent
+import importlib
+import inspect
+from .Node import Node, WaveformNode
+from .Connection import Connection
+from .Port import Port
+from patches.waveforms import FileWave, FunctionWave
+import math
+
 class NodeEditorView(QGraphicsView):
     def __init__(self, board):
         super().__init__()
@@ -26,9 +37,30 @@ class NodeEditorView(QGraphicsView):
         # Map of waveform instances to node objects
         self.waveform_map = {}
         
+        # Zoom settings
+        self.zoom_factor = 1.15
+        self.zoom = 10
+        self.zoom_min = 0
+        self.zoom_max = 20
+        
         # Add existing patches to the scene
         for patch in board.patches:
             self.add_node_for_patch(patch)
+            
+    def wheelEvent(self, event: QWheelEvent):
+        # Zoom in/out with mouse wheel
+        if event.modifiers() & Qt.ControlModifier:
+            zoom_in = event.angleDelta().y() > 0
+            
+            if zoom_in and self.zoom < self.zoom_max:
+                self.zoom += 1
+                self.scale(self.zoom_factor, self.zoom_factor)
+            elif not zoom_in and self.zoom > self.zoom_min:
+                self.zoom -= 1
+                self.scale(1 / self.zoom_factor, 1 / self.zoom_factor)
+        else:
+            # Default scrolling behavior when Ctrl is not pressed
+            super().wheelEvent(event)
             
     def add_node_for_patch(self, patch):
         node = Node(patch)
