@@ -14,6 +14,8 @@ from .Abs import Abs
 from .Filter import Filter
 from .KeyboardInput import KeyboardInput
 from .Note2Pitch import Note2Pitch
+from .VisualPatch import VisualPatch
+from .Scope import Scope
 
 __all__ = ["Patch",
            "AudioOutput",
@@ -29,5 +31,7 @@ __all__ = ["Patch",
            "Abs",
            "Filter",
            "KeyboardInput",
-           "Note2Pitch"
+           "Note2Pitch",
+           "VisualPatch",
+           "Scope"
            ]

@@ -1,8 +1,9 @@
 # gui/Node.py
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsTextItem
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsTextItem, QGraphicsProxyWidget
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QPen, QBrush, QColor, QPainterPath
 from .Port import Port
+from patches.VisualPatch import VisualPatch
 
 class Node(QGraphicsItem):
     def __init__(self, patch, title=None):
@@ -17,11 +18,15 @@ class Node(QGraphicsItem):
         self._inputs = []
         self._outputs = []
         self._text_items = []
+        self.visual_proxy = None  # Store reference to visual proxy
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)  # Flag for item moved event
         self._init_ui()
         
     def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemPositionHasChanged:
+        if change == QGraphicsItem.ItemSceneHasChanged:
+            # Now we have a scene, we can add visual elements
+            self.add_visual_element()
+        elif change == QGraphicsItem.ItemPositionHasChanged:
             # Update all connections when node moves
             for port in self._inputs + self._outputs:
                 for connection in port._connections:
@@ -97,8 +102,30 @@ class Node(QGraphicsItem):
         # Set minimum height based on ports
         self.height = max(self.height, y_offset + 10)
         
+        # Reserve space for visual element if needed
+        if isinstance(self.patch, VisualPatch):
+            visual_element = self.patch.get_visual_element()
+            if visual_element:
+                self.height += 160  # Reserve space for visual element
+        
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
+        
+    def add_visual_element(self):
+        """Add visual element to the node after it's been added to a scene"""
+        if isinstance(self.patch, VisualPatch):
+            visual_element = self.patch.get_visual_element()
+            if visual_element and self.scene():
+                # Create a proxy widget for the visual element
+                self.visual_proxy = QGraphicsProxyWidget(self)
+                self.visual_proxy.setWidget(visual_element)
+                
+                # Position the visual element below the ports
+                visual_height = 150
+                self.visual_proxy.setPos(10, self.height - visual_height - 10)
+                
+                # Resize the visual element to fit within the node
+                visual_element.setFixedSize(self.width - 20, visual_height)
         
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
@@ -130,7 +157,7 @@ class WaveformNode(Node):
         # Initialize port lists
         self._inputs = []
         self._outputs = []
-        
+
         self.title_item = QGraphicsTextItem(self)
         self.title_item.setPlainText(self.title)
         self.title_item.setDefaultTextColor(Qt.white)
