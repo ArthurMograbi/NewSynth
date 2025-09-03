@@ -13,5 +13,21 @@ from .AddConst import AddConst
 from .Abs import Abs
 from .Filter import Filter
 from .KeyboardInput import KeyboardInput
+from .Note2Pitch import Note2Pitch
 
-__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA","Printer","AccAndDec","WavePlayer","CountTo","AddConst","Abs","Filter","KeyboardInput"]
+__all__ = ["Patch",
+           "AudioOutput",
+           "SineGenerator",
+           "MouseData",
+           "ChromaticFrequencyStepper",
+           "VCA",
+           "Printer",
+           "AccAndDec",
+           "WavePlayer",
+           "CountTo",
+           "AddConst",
+           "Abs",
+           "Filter",
+           "KeyboardInput",
+           "Note2Pitch"
+           ]
