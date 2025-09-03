@@ -11,11 +11,12 @@ class Scope(VisualPatch):
     _metadata = {
         "io": {
             "x": "in",
-            "y": "in"
+            "y": "in",
+            "buffer_size":"in"
         }
     }
     
-    def __init__(self, buffer_size=1024*10):
+    def __init__(self, buffer_size=1024):
         super().__init__()
         self.x = 0.0
         self.y = 0.0
