@@ -12,5 +12,6 @@ from .CountTo import CountTo
 from .AddConst import AddConst
 from .Abs import Abs
 from .Filter import Filter
+from .KeyboardInput import KeyboardInput
 
-__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA","Printer","AccAndDec","WavePlayer","CountTo","AddConst","Abs","Filter"]
+__all__ = ["Patch","AudioOutput","SineGenerator","MouseData","ChromaticFrequencyStepper","VCA","Printer","AccAndDec","WavePlayer","CountTo","AddConst","Abs","Filter","KeyboardInput"]
