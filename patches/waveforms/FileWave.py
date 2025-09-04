@@ -14,8 +14,9 @@ class FileWave(Waveform):
         # Initialize the Waveform with the correct duration and sample rate
         super().__init__(duration=duration, sample_rate=sr)
         
-        # Store the normalized audio data
+        # Store the normalized audio data and filename
         self.audio_data = y.astype(np.float32)
+        self.filename = filename
 
         print(len(self))
         
@@ -35,3 +36,9 @@ class FileWave(Waveform):
             return (1 - frac) * self.audio_data[index] + frac * self.audio_data[index + 1]
         else:
             return self.audio_data[index]
+    
+    def jsonify(self):
+        """Convert the FileWave to a JSON-serializable format"""
+        data = super().jsonify()
+        data["filename"] = self.filename
+        return data
