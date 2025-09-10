@@ -1,7 +1,7 @@
 # gui/MainWindow.py
 from PyQt5.QtWidgets import (QMainWindow, QDockWidget, QToolBar, QAction, 
                              QVBoxLayout, QWidget, QLabel, QLineEdit, QFormLayout,
-                             QScrollArea, QDoubleSpinBox)
+                             QScrollArea, QDoubleSpinBox, QFileDialog)
 from PyQt5.QtCore import Qt
 from .NodeEditor import NodeEditorView
 from .Node import Node
@@ -55,6 +55,15 @@ class MainWindow(QMainWindow):
         delete_action = QAction("Delete", self)
         delete_action.triggered.connect(self.editor.delete_selected)
         toolbar.addAction(delete_action)
+        
+        # Save and Load actions
+        save_action = QAction("Save", self)
+        save_action.triggered.connect(self.save_board)
+        toolbar.addAction(save_action)
+        
+        load_action = QAction("Load", self)
+        load_action.triggered.connect(self.load_board)
+        toolbar.addAction(load_action)
         
         # Set central widget
         self.setCentralWidget(self.editor)
@@ -176,3 +185,61 @@ class MainWindow(QMainWindow):
                 setattr(self.current_node.patch, input_name, int(float(value)))
             else:
                 setattr(self.current_node.patch, input_name, value)
+
+    def save_board(self):
+        """Save the current board configuration to a file"""
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Save Board", "", "JSON Files (*.json)"
+        )
+        if filename:
+            # Get positions of all nodes
+            patch_positions = {}
+            waveform_positions = {}
+            
+            # Collect patch positions
+            for patch, node in self.editor.node_map.items():
+                patch_positions[patch] = (node.x(), node.y())
+            
+            # Collect waveform positions
+            for waveform, node in self.editor.waveform_map.items():
+                waveform_positions[waveform] = (node.x(), node.y())
+            
+            # Save to file
+            self.board.save_to_file(filename, patch_positions, waveform_positions)
+    
+    def load_board(self):
+        """Load a board configuration from a file"""
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Load Board", "", "JSON Files (*.json)"
+        )
+        if filename:
+            # Load board from file
+            board, patch_positions, waveform_positions = Board.load_from_file(filename)
+            
+            # Update the current board
+            self.board = board
+            self.editor.board = board
+            
+            # Clear current editor
+            self.editor.scene.clear()
+            self.editor.node_map.clear()
+            self.editor.waveform_map.clear()
+            
+            # Add patches to editor
+            for patch in board.patches:
+                node = self.editor.add_node_for_patch(patch)
+                if patch in patch_positions:
+                    pos = patch_positions[patch]
+                    node.setPos(*pos)
+            
+            # Add waveforms to editor
+            # Note: This would need to be implemented based on how waveforms are stored in your system
+            
+            # Recreate connections
+            self.editor.recreate_connections()
+            
+    def recreate_connections(self):
+        """Recreate visual connections after loading a board"""
+        # This method would need to be implemented to recreate the visual connections
+        # based on the patch connections in the loaded board
+        pass
