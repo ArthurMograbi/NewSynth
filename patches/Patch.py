@@ -35,7 +35,7 @@ class Patch(ABC):
     def step(self):
         pass
 
-    def jsonify(self, patch_ids=None):
+    def jsonify(self, patch_ids=None, position=None):
         """Convert the patch to a JSON-serializable format"""
         # Get all parameters that are not connected
         params = {}
@@ -74,8 +74,14 @@ class Patch(ABC):
                         "source_output": source_output
                     }
         
-        return {
+        result = {
             "type": self.__class__.__name__,
             "params": params,
             "connections": connections
         }
+        
+        # Add position if provided
+        if position is not None:
+            result["position"] = position
+            
+        return result

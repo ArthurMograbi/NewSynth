@@ -37,8 +37,8 @@ class FileWave(Waveform):
         else:
             return self.audio_data[index]
     
-    def jsonify(self):
+    def jsonify(self, position=None):
         """Convert the FileWave to a JSON-serializable format"""
-        data = super().jsonify()
+        data = super().jsonify(position)
         data["filename"] = self.filename
         return data

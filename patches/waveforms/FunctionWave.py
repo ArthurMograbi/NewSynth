@@ -16,8 +16,8 @@ class FunctionWave(Waveform):
     def getSample(self, normTime):
         return self.func(normTime)
     
-    def jsonify(self):
+    def jsonify(self, position=None):
         """Convert the FunctionWave to a JSON-serializable format"""
-        data = super().jsonify()
+        data = super().jsonify(position)
         data["func_source"] = self.func_source
         return data
