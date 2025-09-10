@@ -16,6 +16,7 @@ from .KeyboardInput import KeyboardInput
 from .Note2Pitch import Note2Pitch
 from .VisualPatch import VisualPatch
 from .Scope import Scope
+from .ThreeMix import ThreeMix
 
 __all__ = ["Patch",
            "AudioOutput",
@@ -33,5 +34,6 @@ __all__ = ["Patch",
            "KeyboardInput",
            "Note2Pitch",
            "VisualPatch",
-           "Scope"
+           "Scope",
+           "ThreeMix"
            ]
