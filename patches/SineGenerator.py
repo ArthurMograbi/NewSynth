@@ -9,7 +9,8 @@ class SineGenerator(Patch):
         "io": {
             "output": "out",
             "frequency": "in",
-            "amplitude": "in"
+            "amplitude": "in",
+            "phase_offset": "in"
         }
     }
     
@@ -18,6 +19,7 @@ class SineGenerator(Patch):
         self.frequency = frequency
         self.amplitude = amplitude
         self.phase = 0.0
+        self.phase_offset = 0.0
         self.output = 0.0
         
     
@@ -28,7 +30,7 @@ class SineGenerator(Patch):
         self.step_size = 2 * np.pi * self.frequency / self.board.sample_rate
         
         # Generate the next sample
-        self.output = self.amplitude * np.sin(self.phase)
+        self.output = self.amplitude * np.sin(self.phase+self.phase_offset)
         
         # Update phase, keeping it within [0, 2π)
         self.phase = (self.phase + self.step_size) % (2 * np.pi)
