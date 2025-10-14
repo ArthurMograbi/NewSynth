@@ -2,24 +2,33 @@
 from PyQt5.QtWidgets import (QMainWindow, QDockWidget, QToolBar, QAction, 
                              QVBoxLayout, QWidget, QLabel, QLineEdit, QFormLayout,
                              QScrollArea, QDoubleSpinBox, QFileDialog)
-from PyQt5.QtCore import Qt
-from .NodeEditor import NodeEditorView
-from .Node import Node
+from PyQt5.QtCore import Qt, pyqtSignal
+from gui.Node import Node
 
 class MainWindow(QMainWindow):
+    # Define signals for main window events
+    save_requested = pyqtSignal(str)
+    load_requested = pyqtSignal(str)
+    
     def __init__(self, board):
         super().__init__()
         self.board = board
         self.current_node = None
-        self.input_widgets = {}  # Store input widgets for easy access
+        self.input_widgets = {}
+        self.editor = None
         self.init_ui()
+        
+    def set_editor(self, editor):
+        """Set the node editor for this main window"""
+        self.editor = editor
+        self.setCentralWidget(self.editor)
+        
+        # Connect selection change event
+        self.editor.scene.selectionChanged.connect(self.on_selection_changed)
         
     def init_ui(self):
         self.setWindowTitle("Modular Synth")
         self.setGeometry(100, 100, 1200, 800)
-        
-        # Create node editor
-        self.editor = NodeEditorView(self.board)
         
         # Create info panel
         info_dock = QDockWidget("Patch Info", self)
@@ -53,7 +62,7 @@ class MainWindow(QMainWindow):
         toolbar.addAction(stop_action)
 
         delete_action = QAction("Delete", self)
-        delete_action.triggered.connect(self.editor.delete_selected)
+        delete_action.triggered.connect(self.delete_selected)
         toolbar.addAction(delete_action)
         
         # Save and Load actions
@@ -65,19 +74,21 @@ class MainWindow(QMainWindow):
         load_action.triggered.connect(self.load_board)
         toolbar.addAction(load_action)
         
-        # Set central widget
-        self.setCentralWidget(self.editor)
-        
-        # Connect selection change event
-        self.editor.scene.selectionChanged.connect(self.on_selection_changed)
-        
         # Show the window
         self.show()
+    
+    def delete_selected(self):
+        """Delete currently selected nodes"""
+        if self.editor:
+            self.editor.delete_selected()
         
     def on_selection_changed(self):
         # Clear previous input widgets
         self.clear_input_widgets()
         
+        if not self.editor:
+            return
+            
         selected_items = self.editor.scene.selectedItems()
         if selected_items and isinstance(selected_items[0], Node):
             node = selected_items[0]
@@ -165,7 +176,6 @@ class MainWindow(QMainWindow):
     
     def clear_input_widgets(self):
         """Clear all input widgets from the info layout"""
-        # Remove all rows from the layout
         while self.info_layout.count():
             item = self.info_layout.takeAt(0)
             if item.widget():
@@ -192,20 +202,7 @@ class MainWindow(QMainWindow):
             self, "Save Board", "", "JSON Files (*.json)"
         )
         if filename:
-            # Get positions of all nodes
-            patch_positions = {}
-            waveform_positions = {}
-            
-            # Collect patch positions
-            for patch, node in self.editor.node_map.items():
-                patch_positions[patch] = (node.x(), node.y())
-            
-            # Collect waveform positions
-            for waveform, node in self.editor.waveform_map.items():
-                waveform_positions[waveform] = (node.x(), node.y())
-            
-            # Save to file
-            self.board.save_to_file(filename, patch_positions, waveform_positions)
+            self.save_requested.emit(filename)
     
     def load_board(self):
         """Load a board configuration from a file"""
@@ -213,33 +210,4 @@ class MainWindow(QMainWindow):
             self, "Load Board", "", "JSON Files (*.json)"
         )
         if filename:
-            # Load board from file
-            board, patch_positions, waveform_positions = Board.load_from_file(filename)
-            
-            # Update the current board
-            self.board = board
-            self.editor.board = board
-            
-            # Clear current editor
-            self.editor.scene.clear()
-            self.editor.node_map.clear()
-            self.editor.waveform_map.clear()
-            
-            # Add patches to editor
-            for patch in board.patches:
-                node = self.editor.add_node_for_patch(patch)
-                if patch in patch_positions:
-                    pos = patch_positions[patch]
-                    node.setPos(*pos)
-            
-            # Add waveforms to editor
-            # Note: This would need to be implemented based on how waveforms are stored in your system
-            
-            # Recreate connections
-            self.editor.recreate_connections()
-            
-    def recreate_connections(self):
-        """Recreate visual connections after loading a board"""
-        # This method would need to be implemented to recreate the visual connections
-        # based on the patch connections in the loaded board
-        pass
+            self.load_requested.emit(filename)
