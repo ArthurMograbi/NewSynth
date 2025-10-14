@@ -17,6 +17,7 @@ from .Note2Pitch import Note2Pitch
 from .VisualPatch import VisualPatch
 from .Scope import Scope
 from .ThreeMix import ThreeMix
+from .RandomNoise import RandomNoise
 
 __all__ = ["Patch",
            "AudioOutput",
@@ -35,5 +36,6 @@ __all__ = ["Patch",
            "Note2Pitch",
            "VisualPatch",
            "Scope",
-           "ThreeMix"
+           "ThreeMix",
+           "RandomNoise"
            ]
