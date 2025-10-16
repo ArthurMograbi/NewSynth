@@ -71,12 +71,17 @@ class GUIController(QObject):
         self.board.save_to_file(filename, patch_positions, waveform_positions)
         self.board_saved.emit(filename)
     
+    # In gui/GUIController.py, update the load_board method:
     def load_board(self, filename):
         """Load board from file"""
         board, patch_positions, waveform_positions = Board.load_from_file(filename)
         
         # Update controller state
         self.board = board
+        
+        # CRITICAL: Update the main window's board reference
+        if self.main_window:
+            self.main_window.board = board
         
         # Update UI
         if self.node_editor:

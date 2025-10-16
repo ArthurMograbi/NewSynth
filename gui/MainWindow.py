@@ -52,13 +52,13 @@ class MainWindow(QMainWindow):
         toolbar = QToolBar()
         self.addToolBar(toolbar)
         
-        # Play/Stop actions
+        # Play/Stop actions - use lambda to ensure we use current board reference
         play_action = QAction("Play", self)
-        play_action.triggered.connect(self.board.play)
+        play_action.triggered.connect(lambda: self.board.play() if self.board else None)
         toolbar.addAction(play_action)
         
         stop_action = QAction("Stop", self)
-        stop_action.triggered.connect(self.board.stop)
+        stop_action.triggered.connect(lambda: self.board.stop() if self.board else None)
         toolbar.addAction(stop_action)
 
         delete_action = QAction("Delete", self)

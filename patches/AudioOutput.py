@@ -40,25 +40,34 @@ class AudioOutput(Patch):
     
     def play(self):
         """Start the audio stream."""
-        if self.stream is not None and self.stream.active:
-            print("Stream is already active.")
-            return
+        # Always stop existing stream first to ensure clean state
+        if self.stream is not None:
+            try:
+                self.stream.stop()
+                self.stream.close()
+            except:
+                pass
+            self.stream = None
         
         # Initialize the buffer with silence
         self.buffer = np.zeros(self.blocksize, dtype=np.float32)
         self.buffer_index = 0
         
         # Create and start the stream
-        self.stream = sd.OutputStream(
-            samplerate=self.board.sample_rate,
-            channels=1,
-            dtype=np.float32,
-            callback=self.audio_callback,
-            blocksize=self.blocksize
-        )
-        
-        print("Starting audio stream...")
-        self.stream.start()
+        try:
+            self.stream = sd.OutputStream(
+                samplerate=self.board.sample_rate,
+                channels=1,
+                dtype=np.float32,
+                callback=self.audio_callback,
+                blocksize=self.blocksize
+            )
+            
+            print("Starting audio stream...")
+            self.stream.start()
+        except Exception as e:
+            print(f"Error starting audio stream: {e}")
+            self.stream = None
     
     def stop(self):
         """Stop the audio stream."""

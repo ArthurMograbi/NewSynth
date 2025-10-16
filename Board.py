@@ -11,9 +11,14 @@ class Board:
         self.patches=[]
         for patch in patches: self.add_patch(patch)
 
+    # In Board.py, modify the play method:
     def play(self):
-        for patch in self.patches:
-            if hasattr(patch,"play") and callable(getattr(patch,"play")):
+        print(f"Board.play() called - Number of patches: {len(self.patches)}")
+        for i, patch in enumerate(self.patches):
+            has_play = hasattr(patch, "play") and callable(getattr(patch, "play"))
+            print(f"Patch {i}: {patch.__class__.__name__} - has play: {has_play}")
+            if has_play:
+                print(f"Calling play() on {patch.__class__.__name__}")
                 patch.play()
 
     def stop(self):
@@ -100,7 +105,7 @@ class Board:
                             params[param_name] = wave_class(param_value["filename"])
                         else:
                             print(f"Warning: FileWave missing filename, using default")
-                            params[param_name] = wave_class("default.wav")  # or handle appropriately
+                            params[param_name] = wave_class("default.wav")
                     elif param_value["type"] == "FunctionWave":
                         # Note: Function reconstruction from source is complex
                         # For now, we'll just create a default function
@@ -130,5 +135,19 @@ class Board:
                     
                     # Connect the patches
                     Patch.connect(patch_instances[i], source_patch, input_name, source_output)
+        
+        # CRITICAL FIX: Ensure all patches have the correct board reference
+        for patch in board.patches:
+            patch.board = board
+            
+        # FIX: Reinitialize AudioOutput streams if they exist
+        for patch in board.patches:
+            if hasattr(patch, 'stream') and patch.stream is not None:
+                # Stop and clean up any existing stream
+                try:
+                    patch.stop()
+                except:
+                    pass
+                patch.stream = None
         
         return board, patch_positions, waveform_positions

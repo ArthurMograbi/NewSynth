@@ -15,7 +15,8 @@ class RandomNoise(Patch):
     def __init__(self, scale:float=1.0):
         super().__init__()
         self.scale = scale
-        self.output = 0.0
+        self.random = 0.0
+        self.normal = 0.0
 
     def step(self):
         self.getInputs()
