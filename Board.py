@@ -95,7 +95,12 @@ class Board:
                     wave_class = getattr(wave_module, param_value["type"])
                     
                     if param_value["type"] == "FileWave":
-                        params[param_name] = wave_class(param_value["filename"])
+                        # Make sure filename exists in the param_value
+                        if "filename" in param_value:
+                            params[param_name] = wave_class(param_value["filename"])
+                        else:
+                            print(f"Warning: FileWave missing filename, using default")
+                            params[param_name] = wave_class("default.wav")  # or handle appropriately
                     elif param_value["type"] == "FunctionWave":
                         # Note: Function reconstruction from source is complex
                         # For now, we'll just create a default function

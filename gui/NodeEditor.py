@@ -241,6 +241,22 @@ class NodeEditorView(QGraphicsView):
         
         self.board = board
         
+        # First, collect all waveforms from patches
+        all_waveforms = {}
+        for patch in board.patches:
+            metadata = getattr(patch, '_metadata', {})
+            waveio_data = metadata.get('waveio', {})
+            for wave_input_name, io_type in waveio_data.items():
+                if io_type == "in" and hasattr(patch, wave_input_name):
+                    waveform = getattr(patch, wave_input_name)
+                    if waveform and hasattr(waveform, 'getSample'):  # Check if it's a waveform
+                        all_waveforms[waveform] = waveform_positions.get(waveform, (0, 0))
+        
+        # Add waveform nodes
+        for waveform, position in all_waveforms.items():
+            node = self.add_waveform_node(waveform)
+            node.setPos(*position)
+        
         # Add patches to editor
         for patch in board.patches:
             node = self.add_node_for_patch(patch)
@@ -248,15 +264,68 @@ class NodeEditorView(QGraphicsView):
                 pos = patch_positions[patch]
                 node.setPos(*pos)
         
-        # Note: Waveform loading would need additional implementation
-        # based on how waveforms are stored in your patches
-        
         # Recreate connections visually
         self.recreate_connections()
     
     def recreate_connections(self):
         """Recreate visual connections based on patch connections"""
-        # This would need to iterate through all patches and their connections
-        # to recreate the visual representation
-        # Implementation depends on your specific connection storage
-        pass
+        # Clear any existing connections first
+        for item in self.scene.items():
+            if isinstance(item, Connection):
+                self.scene.removeItem(item)
+        
+        # Recreate connections for all patches
+        for patch, node in self.node_map.items():
+            # Handle input connections
+            for input_name, source_patch in patch.inputs.items():
+                if source_patch in self.node_map:
+                    source_node = self.node_map[source_patch]
+                    output_port_name = source_patch.outputs.get(patch, "")
+                    
+                    # Find the corresponding ports
+                    source_port = None
+                    for port in source_node._outputs:
+                        if port.name == output_port_name:
+                            source_port = port
+                            break
+                    
+                    target_port = None
+                    for port in node._inputs:
+                        if port.name == input_name:
+                            target_port = port
+                            break
+                    
+                    # Create visual connection if both ports exist
+                    if source_port and target_port:
+                        connection = Connection(source_port, target_port)
+                        self.scene.addItem(connection)
+        
+        # Recreate waveform connections
+        for patch, node in self.node_map.items():
+            metadata = getattr(patch, '_metadata', {})
+            waveio_data = metadata.get('waveio', {})
+            
+            for wave_input_name, io_type in waveio_data.items():
+                if io_type == "in" and hasattr(patch, wave_input_name):
+                    waveform = getattr(patch, wave_input_name)
+                    if waveform in self.waveform_map:
+                        waveform_node = self.waveform_map[waveform]
+                        
+                        # Find the waveform output port
+                        source_port = None
+                        for port in waveform_node._outputs:
+                            if port.name == "wave":
+                                source_port = port
+                                break
+                        
+                        # Find the patch input port
+                        target_port = None
+                        for port in node._inputs:
+                            if port.name == wave_input_name:
+                                target_port = port
+                                break
+                        
+                        # Create visual connection
+                        if source_port and target_port:
+                            connection = Connection(source_port, target_port)
+                            self.scene.addItem(connection)
