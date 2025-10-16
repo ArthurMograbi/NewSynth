@@ -71,15 +71,15 @@ class Board:
         with open(filename, 'r') as f:
             data = json.load(f)
         
-        # Extract positions if available
-        patch_positions = data.get("patch_positions", {})
+        # Extract positions correctly - they're stored within each patch
+        patch_positions = {}
         waveform_positions = data.get("waveform_positions", {})
         
         # Create patches first
         patches = []
         patch_instances = []
         
-        for patch_data in data["patches"]:
+        for i, patch_data in enumerate(data["patches"]):
             # Import the patch class
             module = __import__('patches', fromlist=[patch_data["type"]])
             patch_class = getattr(module, patch_data["type"])
@@ -106,6 +106,10 @@ class Board:
             patch = patch_class(**params)
             patches.append(patch)
             patch_instances.append(patch)
+            
+            # Store position for this patch
+            if "position" in patch_data:
+                patch_positions[patch] = tuple(patch_data["position"])
         
         # Create board
         board = cls(patches)
