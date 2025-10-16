@@ -12,9 +12,9 @@ class AudioOutput(Patch):
         }
     }
     
-    def __init__(self, blocksize=1024):
+    def __init__(self, input:float=0.0, blocksize:int=1024):
         super().__init__()
-        self.input = 0.0
+        self.input = input
         self.stream = None
         self.blocksize = blocksize
         self.buffer = np.zeros(blocksize, dtype=np.float32)

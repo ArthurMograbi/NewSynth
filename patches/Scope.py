@@ -15,11 +15,11 @@ class Scope(VisualPatch):
             "buffer_size":"in"
         }
     }
-    
-    def __init__(self, buffer_size=1024):
+
+    def __init__(self, x:float=0.0, y:float=0.0, buffer_size:int=1024):
         super().__init__()
-        self.x = 0.0
-        self.y = 0.0
+        self.x = x
+        self.y = y
         self.buffer_size = buffer_size
         self.buffer_x = np.zeros(buffer_size)
         self.buffer_y = np.zeros(buffer_size)

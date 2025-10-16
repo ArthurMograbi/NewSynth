@@ -14,12 +14,12 @@ class SineGenerator(Patch):
         }
     }
     
-    def __init__(self, frequency:float=440, amplitude:float=0.5):
+    def __init__(self, frequency:float=440, amplitude:float=0.5,phase_offset:float=0.0):
         super().__init__()
         self.frequency = frequency
         self.amplitude = amplitude
         self.phase = 0.0
-        self.phase_offset = 0.0
+        self.phase_offset = phase_offset
         self.output = 0.0
         
     

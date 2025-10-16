@@ -16,15 +16,15 @@ class Filter(Patch):
         }
     }
 
-    def __init__(self, cutoff=1000, resonance=0.5):
+    def __init__(self, cutoff=1000,input:float=0.0,low_pass:float=0.0, high_pass:float=0.0, band_pass:float=0.0, resonance=0.5):
         super().__init__()
         self.cutoff = cutoff
         self.resonance = resonance
-        self.input = 0.0
-        self.low_pass = 0.0
-        self.high_pass = 0.0
-        self.band_pass = 0.0
-        
+        self.input = input
+        self.low_pass = low_pass
+        self.high_pass = high_pass
+        self.band_pass = band_pass
+
         # Filter state variables
         self.low_pass_prev = 0.0
         self.band_pass_prev = 0.0

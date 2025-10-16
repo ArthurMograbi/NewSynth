@@ -15,11 +15,11 @@ class WavePlayer(Patch):
         }
     }
 
-    def __init__(self,wave:Waveform|None=None):
+    def __init__(self,input:float=0.0,play_progress:float=0.0,wave:Waveform|None=None):
         super().__init__()
         self.wave = wave
-        self.play_progress = 0
-        self.input =0.0
+        self.play_progress = play_progress
+        self.input = input
         self.output = 0.0
         self.playing = False
 

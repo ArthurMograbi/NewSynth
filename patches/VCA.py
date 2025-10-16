@@ -11,9 +11,9 @@ class VCA(Patch):
         }
     }
 
-    def __init__(self,amplification:float=1.0):
+    def __init__(self,input:float=0.0,amplification:float=1.0):
         super().__init__()
-        self.input = 0.0
+        self.input = input
         self.amplification = amplification
         self.output = 0.0
 

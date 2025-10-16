@@ -10,9 +10,9 @@ class Abs(Patch):
         }
     }
 
-    def __init__(self):
+    def __init__(self,input:float=0.0):
         super().__init__()
-        self.input = 0.0
+        self.input = input
         self.output = 0.0
 
     def step(self):

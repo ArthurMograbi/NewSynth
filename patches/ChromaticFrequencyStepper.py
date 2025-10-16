@@ -11,10 +11,10 @@ class ChromaticFrequencyStepper(Patch):
         }
     }
 
-    def __init__(self,octaves=8):
+    def __init__(self,input:float=0.0,octaves:int=8):
         super().__init__()
         self.notes = [22.5 * pow(2,i/12) for i in range(octaves*12)]
-        self.input = 0.0
+        self.input = input
         self.output= 0.0
 
     def step(self):

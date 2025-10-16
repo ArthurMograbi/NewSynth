@@ -12,11 +12,11 @@ class ThreeMix(Patch):
         }
     }
 
-    def __init__(self):
+    def __init__(self,in1:float=0.0,in2:float=0.0,in3:float=0.0):
         super().__init__()
-        self.in1 = 0.0
-        self.in2 = 0.0
-        self.in3 = 0.0
+        self.in1 = in1
+        self.in2 = in2
+        self.in3 = in3
         self.output = 0.0
 
     def step(self):

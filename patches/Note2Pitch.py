@@ -12,10 +12,10 @@ class Note2Pitch(Patch):
         }
     }
 
-    def __init__(self,base_pitch=110):
+    def __init__(self,input:float=0.0,base_pitch:float=110):
         super().__init__()
         self.base_pitch = base_pitch
-        self.input = 0.0
+        self.input = input
         self.output = 0.0
 
     def step(self):

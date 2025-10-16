@@ -10,13 +10,13 @@ class AccAndDec(Patch):
         }
     }
 
-    def __init__(self,scale:float=1.0,falloff:float=0.00005,limitLower:float=0.0,limitUpper:float=1.0,absolute=True):
+    def __init__(self,scale:float=1.0,falloff:float=0.00005,limitLower:float=0.0,limitUpper:float=1.0,input:float=0.0,absolute=True):
         super().__init__()
         self.scale = scale
         self.falloff = falloff
         self.limitLower = limitLower
         self.limitUpper = limitUpper
-        self.input = 0.0
+        self.input = input
         self.output = 0.0
         self.deltaF = (lambda i,s,f: abs(i)*s-f) if absolute else (lambda i,s,f: i*s-f)
 

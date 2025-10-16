@@ -12,9 +12,9 @@ class RandomNoise(Patch):
         }
     }
 
-    def __init__(self):
+    def __init__(self, scale:float=1.0):
         super().__init__()
-        self.scale = 1.0
+        self.scale = scale
         self.output = 0.0
 
     def step(self):

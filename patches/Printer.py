@@ -10,9 +10,9 @@ class Printer(Patch):
         }
     }
 
-    def __init__(self,interval:int=1000):
+    def __init__(self,input:float=0.0,interval:int=1000):
         super().__init__()
-        self.input = 0.0
+        self.input = input
         self.interval = interval
         self.output = 0.0
 
