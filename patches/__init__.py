@@ -18,6 +18,7 @@ from .VisualPatch import VisualPatch
 from .Scope import Scope
 from .ThreeMix import ThreeMix
 from .RandomNoise import RandomNoise
+from .BouncingBall import BouncingBall
 
 __all__ = ["Patch",
            "AudioOutput",
@@ -37,5 +38,6 @@ __all__ = ["Patch",
            "VisualPatch",
            "Scope",
            "ThreeMix",
-           "RandomNoise"
+           "RandomNoise",
+           "BouncingBall"
            ]
