@@ -4,7 +4,7 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.patches import Circle
+from matplotlib.patches import Circle, Rectangle
 
 class BouncingBall(VisualPatch):
 
@@ -43,6 +43,17 @@ class BouncingBall(VisualPatch):
         # create the ball patch
         self.ball = Circle((self.x, self.y), radius=self.radius, color='C0')
         self.ax.add_patch(self.ball)
+
+        # draw walls (inset by radius so the border represents the center limits)
+        self.walls = Rectangle(
+            (self.radius, self.radius),
+            1.0 - 2.0 * self.radius,
+            1.0 - 2.0 * self.radius,
+            fill=False,
+            edgecolor='k',
+            linewidth=2
+        )
+        self.ax.add_patch(self.walls)
 
         self.visual_element = self.canvas
 
