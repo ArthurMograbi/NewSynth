@@ -12,15 +12,24 @@ class AudioOutput(Patch):
         }
     }
     
-    def __init__(self, input:float=0.0, blocksize:int=1024):
+    def __init__(self, input:float=0.0, blocksize:int=1024,log_time:bool=True,log_interval:float=1.0):
         super().__init__()
         self.input = input
         self.stream = None
         self.blocksize = blocksize
         self.buffer = np.zeros(blocksize, dtype=np.float32)
         self.buffer_index = 0
-    
+        self.log_time = log_time
+        self.log_interval = log_interval
+        self.last_log = 0.0
+        self.num_callbacks = 0
+
     def audio_callback(self, outdata, frames, time, status):
+        if self.log_time and (time.currentTime - self.last_log) >= self.log_interval:
+            print(self.num_callbacks / (time.currentTime - self.last_log))
+            self.last_log = time.currentTime
+            self.num_callbacks = 0
+        self.num_callbacks += 1
         if status:
             print(f"Status: {status}")
         
