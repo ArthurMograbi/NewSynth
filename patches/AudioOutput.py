@@ -12,7 +12,7 @@ class AudioOutput(Patch):
         }
     }
     
-    def __init__(self, input:float=0.0, blocksize:int=1024,log_time:bool=True,log_interval:float=1.0):
+    def __init__(self, input:float=0.0, blocksize:int=1024,log_time:bool=False,log_interval:float=30.0):
         super().__init__()
         self.input = input
         self.stream = None
