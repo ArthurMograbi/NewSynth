@@ -20,6 +20,7 @@ from .ThreeMix import ThreeMix
 from .RandomNoise import RandomNoise
 from .BouncingBall import BouncingBall
 from .HandCuboid import HandCuboid
+from .Clock import Clock
 
 __all__ = ["Patch",
            "AudioOutput",
@@ -41,5 +42,6 @@ __all__ = ["Patch",
            "ThreeMix",
            "RandomNoise",
            "BouncingBall",
-           "HandCuboid"
+           "HandCuboid",
+           "Clock"
            ]
