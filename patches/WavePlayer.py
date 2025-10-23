@@ -8,21 +8,29 @@ class WavePlayer(Patch):
         "io": {
             "input":"in",
             "play_progress":"in",
+            "reset":"in",
             "output":"out"
+        },
+        "waveio":{
+            "wave":"in"
         }
     }
 
-    def __init__(self,wave:Waveform):
+    def __init__(self,input:float=0.0,play_progress:float=0.0,reset:float=0.0,wave:Waveform|None=None):
         super().__init__()
         self.wave = wave
-        self.play_progress = 0
-        self.input =0.0
+        self.play_progress = play_progress
+        self.input = input
         self.output = 0.0
+        self.reset = reset
         self.playing = False
 
 
     def step(self):
         self.getInputs()
+        if self.reset >0.0:
+            self.playing=True
+            self.play_progress = 0
         if self.input > 0.0:
             self.playing=True
         if self.playing:

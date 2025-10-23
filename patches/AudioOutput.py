@@ -12,15 +12,24 @@ class AudioOutput(Patch):
         }
     }
     
-    def __init__(self, blocksize=1024):
+    def __init__(self, input:float=0.0, blocksize:int=1024,log_time:bool=False,log_interval:float=30.0):
         super().__init__()
-        self.input = 0.0
+        self.input = input
         self.stream = None
         self.blocksize = blocksize
         self.buffer = np.zeros(blocksize, dtype=np.float32)
         self.buffer_index = 0
-    
+        self.log_time = log_time
+        self.log_interval = log_interval
+        self.last_log = 0.0
+        self.num_callbacks = 0
+
     def audio_callback(self, outdata, frames, time, status):
+        if self.log_time and (time.currentTime - self.last_log) >= self.log_interval:
+            print(self.num_callbacks / (time.currentTime - self.last_log))
+            self.last_log = time.currentTime
+            self.num_callbacks = 0
+        self.num_callbacks += 1
         if status:
             print(f"Status: {status}")
         
@@ -40,25 +49,34 @@ class AudioOutput(Patch):
     
     def play(self):
         """Start the audio stream."""
-        if self.stream is not None and self.stream.active:
-            print("Stream is already active.")
-            return
+        # Always stop existing stream first to ensure clean state
+        if self.stream is not None:
+            try:
+                self.stream.stop()
+                self.stream.close()
+            except:
+                pass
+            self.stream = None
         
         # Initialize the buffer with silence
         self.buffer = np.zeros(self.blocksize, dtype=np.float32)
         self.buffer_index = 0
         
         # Create and start the stream
-        self.stream = sd.OutputStream(
-            samplerate=self.board.sample_rate,
-            channels=1,
-            dtype=np.float32,
-            callback=self.audio_callback,
-            blocksize=self.blocksize
-        )
-        
-        print("Starting audio stream...")
-        self.stream.start()
+        try:
+            self.stream = sd.OutputStream(
+                samplerate=self.board.sample_rate,
+                channels=1,
+                dtype=np.float32,
+                callback=self.audio_callback,
+                blocksize=self.blocksize
+            )
+            
+            print("Starting audio stream...")
+            self.stream.start()
+        except Exception as e:
+            print(f"Error starting audio stream: {e}")
+            self.stream = None
     
     def stop(self):
         """Stop the audio stream."""

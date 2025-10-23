@@ -1,24 +1,24 @@
-#Printer.py
+#patches/VCA.py
 from .Patch import Patch
+from math import pow
 
-class Printer(Patch):
+class Note2Pitch(Patch):
 
     _metadata = {
         "io": {
             "input":"in",
+            "base_pitch":"in",
             "output":"out"
         }
     }
 
-    def __init__(self,input:float=0.0,interval:int=1000):
+    def __init__(self,input:float=0.0,base_pitch:float=110):
         super().__init__()
+        self.base_pitch = base_pitch
         self.input = input
-        self.interval = interval
         self.output = 0.0
 
     def step(self):
         self.getInputs()
-        #print(self.input, self.interval)
-        if not self.time%self.interval: print("Input",self.input)
-        self.output = self.input
+        self.output = self.base_pitch * pow(2.0,self.input/12)
         self.time+=1

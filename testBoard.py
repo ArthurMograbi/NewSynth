@@ -17,19 +17,7 @@ if __name__ == "__main__":
     prin = Printer(interval=10000)
     
     # Create board and add patches
-    board = Board(patches=[sine_gen, sine_gen2, audio_out,chrom,mouse,vca,wav])
-    print(sine_gen.inputs,sine_gen.outputs)
-    print(audio_out.inputs,audio_out.outputs)
-    # Connect the sine generator to the audio output
-    
-    Patch.connect(wav,mouse,"input","mouseScroll")
-    #Patch.connect(prin,wav,"input","output")
-    Patch.connect(sine_gen,wav,"amplitude","output")
-    Patch.connect(chrom,mouse,"input","mouseX")
-    Patch.connect(sine_gen,chrom,"frequency","output")
-    Patch.connect(vca,sine_gen,"input","output")
-    Patch.connect(vca,sine_gen2,"amplification","output")
-    Patch.connect(audio_out, vca, "input", "output")
+    board = Board.load_from_file("data/audio_speed.json")
     
     print(sine_gen.inputs,sine_gen.outputs)
     print(audio_out.inputs,audio_out.outputs)

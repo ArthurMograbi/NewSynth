@@ -1,5 +1,6 @@
 #patches/waveforms/Waveform.py
 from abc import ABC, abstractmethod
+import json
 
 class Waveform(ABC):
 
@@ -17,3 +18,18 @@ class Waveform(ABC):
     
     def __len__(self):
         return int((self.sample_rate)*self.duration)
+    
+    def jsonify(self, position=None):
+        """Convert the waveform to a JSON-serializable format"""
+        result = {
+            "type": self.__class__.__name__,
+            "duration": self.duration,
+            "sample_rate": self.sample_rate,
+            "blocksize": self.blocksize
+        }
+        
+        # Add position if provided
+        if position is not None:
+            result["position"] = position
+            
+        return result

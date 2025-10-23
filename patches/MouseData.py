@@ -10,7 +10,10 @@ class MouseData(Patch):
         "io": {
             "mouseX": "out",
             "mouseY": "out",
-            "mouseScroll": "out"  # Added scroll output
+            "mouseScroll": "out" ,
+            "scaleX":"in",
+            "scaleY":"in",
+            "scaleScroll":"in"
         }
     }
 
