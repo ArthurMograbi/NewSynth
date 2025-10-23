@@ -21,6 +21,8 @@ from .RandomNoise import RandomNoise
 from .BouncingBall import BouncingBall
 from .HandCuboid import HandCuboid
 from .Clock import Clock
+from .EveryN import EveryN
+from .SkipN import SkipN
 
 __all__ = ["Patch",
            "AudioOutput",
@@ -43,5 +45,7 @@ __all__ = ["Patch",
            "RandomNoise",
            "BouncingBall",
            "HandCuboid",
-           "Clock"
+           "Clock",
+           "EveryM",
+           "SkipN"
            ]
