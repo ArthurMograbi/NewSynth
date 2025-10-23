@@ -23,6 +23,8 @@ from .HandCuboid import HandCuboid
 from .Clock import Clock
 from .EveryN import EveryN
 from .SkipN import SkipN
+from .Map import Map
+
 
 __all__ = ["Patch",
            "AudioOutput",
@@ -46,6 +48,7 @@ __all__ = ["Patch",
            "BouncingBall",
            "HandCuboid",
            "Clock",
-           "EveryM",
-           "SkipN"
+           "EveryN",
+           "SkipN",
+           "Map"
            ]
