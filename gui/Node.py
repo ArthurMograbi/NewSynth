@@ -46,14 +46,10 @@ class Node(QGraphicsItem):
             5
         )
         
-        # Create ports based on metadata
-        metadata = getattr(self.patch, '_metadata', {})
-        io_data = metadata.get('io', {})
-        waveio_data = metadata.get('waveio', {})
-        
+        # Use cached metadata keys for faster port creation
         # Input ports
         y_offset = self.title_height + 10
-        for input_name in [k for k, v in io_data.items() if v == "in"]:
+        for input_name in self.patch._io_inputs:
             # Create port
             port = Port(self, input_name, is_output=False)
             port.setPos(5, y_offset)
@@ -68,7 +64,7 @@ class Node(QGraphicsItem):
             y_offset += self.port_spacing
             
         # Waveform input ports
-        for input_name in [k for k, v in waveio_data.items() if v == "in"]:
+        for input_name in self.patch._waveio_inputs:
             # Create waveform port with yellow border
             port = Port(self, input_name, is_output=False, is_waveform=True)
             port.setPos(5, y_offset)
@@ -84,7 +80,7 @@ class Node(QGraphicsItem):
         
         # Output ports
         y_offset = self.title_height + 10
-        for output_name in [k for k, v in io_data.items() if v == "out"]:
+        for output_name in self.patch._io_outputs:
             # Create port
             port = Port(self, output_name, is_output=True)
             port.setPos(self.width - 15, y_offset)

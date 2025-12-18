@@ -103,17 +103,14 @@ class MainWindow(QMainWindow):
             info_label = QLabel(info_text)
             self.info_layout.addRow(info_label)
             
-            # Show inputs and outputs
-            metadata = getattr(patch, '_metadata', {})
-            io_data = metadata.get('io', {})
-            
-            if io_data:
+            # Show inputs and outputs using cached input keys
+            if patch._io_inputs:
                 # Add inputs section header
                 inputs_label = QLabel("<h3>Inputs:</h3>")
                 self.info_layout.addRow(inputs_label)
                 
-                # Add input fields for unconnected inputs
-                for input_name in [k for k, v in io_data.items() if v == "in"]:
+                # Add input fields for unconnected inputs using cached keys
+                for input_name in patch._io_inputs:
                     # Find the port for this input
                     port = None
                     for p in node._inputs:
@@ -164,8 +161,8 @@ class MainWindow(QMainWindow):
                 outputs_label = QLabel("<h3>Outputs:</h3>")
                 self.info_layout.addRow(outputs_label)
                 
-                # List output ports
-                for output_name in [k for k, v in io_data.items() if v == "out"]:
+                # List output ports using cached keys
+                for output_name in patch._io_outputs:
                     output_label = QLabel(output_name)
                     self.info_layout.addRow(output_label)
         else:

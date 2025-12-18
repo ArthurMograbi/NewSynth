@@ -241,13 +241,11 @@ class NodeEditorView(QGraphicsView):
         
         self.board = board
         
-        # First, collect all waveforms from patches
+        # First, collect all waveforms from patches using cached waveform input keys
         all_waveforms = {}
         for patch in board.patches:
-            metadata = getattr(patch, '_metadata', {})
-            waveio_data = metadata.get('waveio', {})
-            for wave_input_name, io_type in waveio_data.items():
-                if io_type == "in" and hasattr(patch, wave_input_name):
+            for wave_input_name in patch._waveio_inputs:
+                if hasattr(patch, wave_input_name):
                     waveform = getattr(patch, wave_input_name)
                     if waveform and hasattr(waveform, 'getSample'):  # Check if it's a waveform
                         all_waveforms[waveform] = waveform_positions.get(waveform, (0, 0))
@@ -300,13 +298,10 @@ class NodeEditorView(QGraphicsView):
                         connection = Connection(source_port, target_port)
                         self.scene.addItem(connection)
         
-        # Recreate waveform connections
+        # Recreate waveform connections using cached waveform input keys
         for patch, node in self.node_map.items():
-            metadata = getattr(patch, '_metadata', {})
-            waveio_data = metadata.get('waveio', {})
-            
-            for wave_input_name, io_type in waveio_data.items():
-                if io_type == "in" and hasattr(patch, wave_input_name):
+            for wave_input_name in patch._waveio_inputs:
+                if hasattr(patch, wave_input_name):
                     waveform = getattr(patch, wave_input_name)
                     if waveform in self.waveform_map:
                         waveform_node = self.waveform_map[waveform]
