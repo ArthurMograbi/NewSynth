@@ -24,6 +24,8 @@ from .Clock import Clock
 from .EveryN import EveryN
 from .SkipN import SkipN
 from .Map import Map
+from .MajorQuantitizer import MajorQuantitizer
+from .ClockedSample import ClockedSample
 
 
 __all__ = ["Patch",
@@ -50,5 +52,7 @@ __all__ = ["Patch",
            "Clock",
            "EveryN",
            "SkipN",
-           "Map"
+           "Map",
+           "MajorQuantitizer",
+           "ClockedSample"
            ]
