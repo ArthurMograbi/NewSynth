@@ -26,6 +26,7 @@ from .SkipN import SkipN
 from .Map import Map
 from .MajorQuantitizer import MajorQuantitizer
 from .ClockedSample import ClockedSample
+from .WalkingNoise import WalkingNoise
 
 
 __all__ = ["Patch",
@@ -54,5 +55,6 @@ __all__ = ["Patch",
            "SkipN",
            "Map",
            "MajorQuantitizer",
-           "ClockedSample"
+           "ClockedSample",
+           "WalkingNoise"
            ]
