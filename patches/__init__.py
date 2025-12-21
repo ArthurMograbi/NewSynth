@@ -16,6 +16,7 @@ from .KeyboardInput import KeyboardInput
 from .Note2Pitch import Note2Pitch
 from .VisualPatch import VisualPatch
 from .Scope import Scope
+from .Sequencer import Sequencer
 from .ThreeMix import ThreeMix
 from .RandomNoise import RandomNoise
 from .BouncingBall import BouncingBall
@@ -56,5 +57,6 @@ __all__ = ["Patch",
            "Map",
            "MajorQuantitizer",
            "ClockedSample",
-           "WalkingNoise"
+           "WalkingNoise",
+           "Sequencer"
            ]
